@@ -6,8 +6,11 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
+import com.devsuperior.dsmeta.dto.SalesReportDTO;
 import com.devsuperior.dsmeta.dto.SalesSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.devsuperior.dsmeta.dto.SaleMinDTO;
@@ -41,7 +44,30 @@ public class SaleService {
 			min = LocalDate.parse(minDate);
 		}
 
-		List<SalesSummaryDTO> list = repository.saleSummary(min, max);
-		return list;
+		return  repository.saleSummary(min, max);
+
 	}
+
+	public Page<SalesReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable){
+		LocalDate min;
+		LocalDate max;
+		if(maxDate.isEmpty()){
+			max = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
+		}else{
+			max = LocalDate.parse(maxDate);
+		}
+
+		if(minDate.isEmpty()){
+			min = max.minusYears(1);
+		}else{
+			min = LocalDate.parse(minDate);
+		}
+
+		return repository.salesReport(pageable, min, max, name);
+	}
+
+
+
+
+
 }
